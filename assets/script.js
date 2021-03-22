@@ -32,8 +32,8 @@ var correctAnswers = [
     "var",
     "Long",
     "x",
-    ""
-
+    "y =!= z",
+    "variableName"
 ];
 
 if (questions.length !== answers.length || answers.length !== correctAnswers.length || questions.length !== correctAnswers.length) {
