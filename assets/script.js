@@ -44,9 +44,27 @@ var startButton = document.getElementById("start-button");
 var questionBox = document.getElementById("question-box");
 var questionSentence = document.getElementById("question-sentence");
 var answerBox = document.getElementById("answer-box");
+var answerSpaces = answerBox.getElementsByTagName('li');
+
+
+function newQuestion(num) {
+    questionSentence.textContent = questions[num];
+
+    for (i = 0; i < answerSpaces.length; i++) {
+        answerSpaces[i].textContent = answers[num][i];
+    }
+}
 
 
 startButton.addEventListener("click", function() {
-    console.log("Start");
+    questionBox.style.display = "block";
+    startButton.style.display = "none";
+    newQuestion(0);
 
 });
+
+for (var i = 0; i < answerSpaces.length; i++) {
+    answerSpaces[i].addEventListener("click", function(e) {
+        console.log(e.target);
+    });
+}
