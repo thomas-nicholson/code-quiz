@@ -11,10 +11,10 @@
     <div class="content">
         <header>
             <h1>Code Quiz</h1>
-            <span class="dashboard">
-                <span id="timer">Timer: 30</span>
+            <div class="dashboard">
+                <span id="timer">Timer: 60</span>
                 <span id="score">Score: 0</span>
-            </span>
+            </div>
         </header>
         <div id="question-box">
             <h6 id="question-sentence"></h6>
@@ -26,6 +26,15 @@
             </ul>
         </div>
         <button id="start-button">Start</button>
+        <div class="highscore-ui">
+            <form>
+                <label for="initials">Enter Your Initials:</label>
+                <input type="text" size="5" maxlength="4" name="initials"/>
+            </form>
+            <ol id="highscore-table">
+            </ol>
+        </div>
+        
     </div>
     <script src="assets/script.js"></script>
 </body>
