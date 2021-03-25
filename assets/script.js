@@ -115,6 +115,7 @@ function showHighScores() {
         form.style.display = "none";
     });
 }
+
 function renderTimer() {
     if (ticker===0)
         dashboard.style.display = "none";
@@ -124,6 +125,7 @@ function renderTimer() {
         timer.innerHTML = "Timer: " +ticker;
     }
 }
+
 function onTimer() {
     dashboard.style.display = "block";
     renderTimer();
@@ -135,6 +137,7 @@ function onTimer() {
         setTimeout(onTimer, 1000);
     }
 }
+
 startButton.addEventListener("click", function() {
     if (startButton.innerHTML == "Reset") {
         location.reload();
