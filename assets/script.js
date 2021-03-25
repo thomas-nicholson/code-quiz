@@ -31,7 +31,7 @@ var correctAnswers = [
     "var",
     "Long",
     "x",
-    "y =!= z",
+    "y =!= z;",
     "variableName"
 ];
 
@@ -40,6 +40,10 @@ var questionBox = document.getElementById("question-box");
 var questionSentence = document.getElementById("question-sentence");
 var answerBox = document.getElementById("answer-box");
 var answerSpaces = answerBox.getElementsByTagName('li');
+var dashboard = document.getElementsByClassName('dashboard')[0];
+var timer = document.getElementById('timer');
+var scoreCard = document.getElementById('score');
+
 
 var questionNumber = -1;
 var score = 0;
@@ -57,17 +61,57 @@ function newQuestion() {
         answerSpaces[i].textContent = answers[questionNumber][i];
     }
 }
-function onTimer() {
-    if (ticker < 10) {
-        document.getElementById('timer').innerHTML = "timer: 0" +ticker;
-    } else {
-        document.getElementById('timer').innerHTML = "timer: " +ticker;
+
+function renderHighScores() {
+
+}
+
+function showHighScores() {
+    var scores = JSON.parse(localStorage.getItem("scores"));
+    if (!scores) {
+        scores = [];
     }
+    var highScoreTable = document.getElementById("highscore-table");
+    for (i = 0; i < scores.length; i++) {
+        highScoreTable.appendChild("<li>"+ scores[i].initials+": "+scores[i].score +"</li>");
+    }
+
+    var form = document.getElementsByTagName('form')[0];
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        var input = document.getElementsByTagName('input')[0];
+        var initials = input.value;
+        input.value = "";
+        var scoreObject = {
+            initials,
+            score
+        }
+        scores.push(scoreObject);
+
+        scores.sort(function(a, b) {
+            return a.score-b.score
+        });
+
+        localStorage.setItem("scores", JSON.stringify(scores));
+
+        console.log("Googoo");
+    });
+}
+
+function onTimer() {
+    dashboard.style.display = "block";
+    if (ticker < 10) {
+        timer.innerHTML = "Timer: 0" +ticker;
+    } else {
+        timer.innerHTML = "Timer: " +ticker;
+    }
+    console.log(timer);
     ticker--;
     if (ticker < 0) {
         alert('You lose!');
-    }
-    else {
+        showHighScores();
+    } else {
         setTimeout(onTimer, 1000);
     }
 }
@@ -85,7 +129,10 @@ for (var i = 0; i < answerSpaces.length; i++) {
         console.log();
         if (e.target.getAttribute("data-answer") === correctAnswers[questionNumber]) {
             console.log("Correct");
-            score++
+            if (score < 10) {
+                score++
+            }
+            scoreCard.innerHTML = "Score: "+ score;
         } else {
             console.log("Incorrect");
             //decrement timer
