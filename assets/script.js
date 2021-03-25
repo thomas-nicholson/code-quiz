@@ -36,21 +36,22 @@ var correctAnswers = [
 ];
 
 var startButton = document.getElementById("start-button");
-var questionBox = document.getElementById("question-box");
+var questionBox = document.getElementsByClassName("question-box")[0];
 var questionSentence = document.getElementById("question-sentence");
 var answerBox = document.getElementById("answer-box");
 var answerSpaces = answerBox.getElementsByTagName('li');
 var dashboard = document.getElementsByClassName('dashboard')[0];
 var timer = document.getElementById('timer');
 var scoreCard = document.getElementById('score');
-
+var highScoreUi = document.getElementsByClassName('highscore-ui')[0]
 
 var questionNumber = -1;
 var score = 0;
 var ticker = 60;
+var isHighScoreShown = false;
 
 function newQuestion() {
-    if (questionNumber < 9) {
+    if (questionNumber < questions.length-1) {
         questionNumber++;
     } else {
         showHighScores();
@@ -63,7 +64,19 @@ function newQuestion() {
     }
 }
 
-var isHighScoreShown = false;
+function renderHighScores(scores) {
+    var highScoreTable = document.getElementById("highscore-table");
+    while (highScoreTable.lastChild) {
+        highScoreTable.removeChild(highScoreTable.lastChild);
+    }
+    for (i = 0; i < scores.length; i++) {
+        console.log(scores[i]);
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode(scores[i].initials+": "+scores[i].score);
+        node.appendChild(textnode);
+        highScoreTable.appendChild(node);
+    }
+}
 
 function showHighScores() {
 
@@ -73,27 +86,18 @@ function showHighScores() {
     ticker = 0;
     dashboard.style.display = "none";
     questionBox.style.display = "none";
-    document.getElementsByClassName('highscore-ui')[0].style.display = "block";
+    highScoreUi.style.display = "block";
     var scores = JSON.parse(localStorage.getItem("scores"));
     if (!scores) {
         scores = [];
     }
-    var highScoreTable = document.getElementById("highscore-table");
-    for (i = 0; i < scores.length; i++) {
-        console.log(scores[i]);
-        var node = document.createElement("LI");
-        var textnode = document.createTextNode(scores[i].initials+": "+scores[i].score);
-        node.appendChild(textnode);
-        highScoreTable.appendChild(node);
-    }
-    console.log(highScoreTable);
-
+    renderHighScores(scores);
     var form = document.getElementsByTagName('form')[0];
 
     form.addEventListener("submit", function(e) {
         e.preventDefault();
         var input = document.getElementsByTagName('input')[0];
-        var initials = input.value;
+        var initials = input.value.toUpperCase();
         console.log(initials);
         var scoreObject = {
             initials,
@@ -101,25 +105,25 @@ function showHighScores() {
         }
         input.value = "";
         scores.push(scoreObject);
-
         scores.sort(function(a, b) {
             return b.score-a.score
         });
-
         localStorage.setItem("scores", JSON.stringify(scores));
-
-        console.log("Googoo");
+        renderHighScores(scores);
+        startButton.innerHTML = "Reset";
+        startButton.style.display = "block";
+        form.style.display = "none";
     });
 }
-
 function renderTimer() {
+    if (ticker===0)
+        dashboard.style.display = "none";
     if (ticker < 10) {
         timer.innerHTML = "Timer: 0" +ticker;
     } else {
         timer.innerHTML = "Timer: " +ticker;
     }
 }
-
 function onTimer() {
     dashboard.style.display = "block";
     renderTimer();
@@ -132,18 +136,19 @@ function onTimer() {
     }
 }
 startButton.addEventListener("click", function() {
+    if (startButton.innerHTML == "Reset") {
+        location.reload();
+        return;
+    }
     questionBox.style.display = "block";
     startButton.style.display = "none";
     newQuestion();
     onTimer();
-
 });
 
 for (var i = 0; i < answerSpaces.length; i++) {
     answerSpaces[i].addEventListener("click", function(e) {
-        console.log();
         if (e.target.getAttribute("data-answer") === correctAnswers[questionNumber]) {
-            console.log("Correct");
             if (score < 10) {
                 score++
             }
@@ -152,10 +157,8 @@ for (var i = 0; i < answerSpaces.length; i++) {
                 showHighScores();
             }
         } else {
-            console.log("Incorrect");
-            ticker--;
+            ticker = ticker-2;
             renderTimer();
-            //decrement timer
         }
         newQuestion();
     });
